@@ -23,6 +23,9 @@
    \file
    SdFile and SdVolume classes
 */
+
+#include <Arduino.h>
+
 #if defined (__AVR__) || defined (__CPU_ARC__)
   #include <avr/pgmspace.h>
 #endif

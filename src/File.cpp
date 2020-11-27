@@ -18,7 +18,7 @@
    uint8_t nfilecount=0;
 */
 
-File::File(SdFile f, const char *n) {
+File_Base::File_Base(SdFile f, const char *n) {
   // oh man you are kidding me, new() doesn't exist? Ok we do it by hand!
   _file = (SdFile *)malloc(sizeof(SdFile));
   if (_file) {
@@ -37,28 +37,28 @@ File::File(SdFile f, const char *n) {
   }
 }
 
-File::File(void) {
+File_Base::File_Base(void) {
   _file = 0;
   _name[0] = 0;
   //Serial.print("Created empty file object");
 }
 
 // returns a pointer to the file name
-char *File::name(void) {
+char *File_Base::name(void) {
   return _name;
 }
 
 // a directory is a special type of file
-bool File::isDirectory(void) {
+bool File_Base::isDirectory(void) {
   return (_file && _file->isDir());
 }
 
 
-size_t File::write(uint8_t val) {
+size_t File_Base::write(uint8_t val) {
   return write(&val, 1);
 }
 
-size_t File::write(const uint8_t *buf, size_t size) {
+size_t File_Base::write(const uint8_t *buf, size_t size) {
   size_t t;
   if (!_file) {
     setWriteError();
@@ -73,14 +73,14 @@ size_t File::write(const uint8_t *buf, size_t size) {
   return t;
 }
 
-int File::availableForWrite() {
+int File_Base::availableForWrite() {
   if (_file) {
     return _file->availableForWrite();
   }
   return 0;
 }
 
-int File::peek() {
+int File_Base::peek() {
   if (! _file) {
     return 0;
   }
@@ -92,7 +92,7 @@ int File::peek() {
   return c;
 }
 
-int File::read() {
+int File_Base::read() {
   if (_file) {
     return _file->read();
   }
@@ -100,14 +100,14 @@ int File::read() {
 }
 
 // buffered read for more efficient, high speed reading
-int File::read(void *buf, uint16_t nbyte) {
+int File_Base::read(void *buf, uint16_t nbyte) {
   if (_file) {
     return _file->read(buf, nbyte);
   }
   return 0;
 }
 
-int File::available() {
+int File_Base::available() {
   if (! _file) {
     return 0;
   }
@@ -117,13 +117,13 @@ int File::available() {
   return n > 0X7FFF ? 0X7FFF : n;
 }
 
-void File::flush() {
+void File_Base::flush() {
   if (_file) {
     _file->sync();
   }
 }
 
-bool File::seek(uint32_t pos) {
+bool File_Base::seek(uint32_t pos) {
   if (! _file) {
     return false;
   }
@@ -131,21 +131,21 @@ bool File::seek(uint32_t pos) {
   return _file->seekSet(pos);
 }
 
-uint32_t File::position() {
+uint32_t File_Base::position() {
   if (! _file) {
     return -1;
   }
   return _file->curPosition();
 }
 
-uint32_t File::size() {
+uint32_t File_Base::size() {
   if (! _file) {
     return 0;
   }
   return _file->fileSize();
 }
 
-void File::close() {
+void File_Base::close() {
   if (_file) {
     _file->close();
     free(_file);
@@ -159,7 +159,7 @@ void File::close() {
   }
 }
 
-File::operator bool() {
+File_Base::operator bool() {
   if (_file) {
     return  _file->isOpen();
   }

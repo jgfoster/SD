@@ -57,6 +57,12 @@ uint8_t const SPI_QUARTER_SPEED = 2;
 
   // include pins_arduino.h or variant.h depending on architecture, via Arduino.h
   #include <Arduino.h>
+  #if defined(MOCK_PINS_COUNT) & !defined(SDCARD_SS_PIN)
+    #define SDCARD_SS_PIN    4
+    #define SDCARD_MOSI_PIN 11
+    #define SDCARD_MISO_PIN 12
+    #define SDCARD_SCK_PIN  13
+  #endif
 
   /**
   SD Chip Select pin
