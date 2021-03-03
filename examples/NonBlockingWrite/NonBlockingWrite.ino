@@ -55,7 +55,8 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
 
   // wait for Serial Monitor to connect. Needed for native USB port boards only:
-  while (!Serial);
+  while (!Serial)
+    ;
 
   Serial.print("Initializing SD card...");
 
@@ -63,9 +64,12 @@ void setup() {
     Serial.println("initialization failed. Things to check:");
     Serial.println("1. is a card inserted?");
     Serial.println("2. is your wiring correct?");
-    Serial.println("3. did you change the chipSelect pin to match your shield or module?");
-    Serial.println("Note: press reset or reopen this serial monitor after fixing your issue!");
-    while (true);
+    Serial.println(
+        "3. did you change the chipSelect pin to match your shield or module?");
+    Serial.println("Note: press reset or reopen this serial monitor after "
+                   "fixing your issue!");
+    while (true)
+      ;
   }
 
   Serial.println("initialization done.");
@@ -79,7 +83,8 @@ void setup() {
   if (!myFile) {
     Serial.print("error opening ");
     Serial.println(filename);
-    while (true);
+    while (true)
+      ;
   }
 
   // add some new lines to start

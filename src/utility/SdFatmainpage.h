@@ -45,11 +45,11 @@
   A number of example are provided in the SdFat/examples folder.  These were
   developed to test SdFat and illustrate its use.
 
-  SdFat was developed for high speed data recording.  SdFat was used to implement
-  an audio record/play class, WaveRP, for the Adafruit Wave Shield.  This
-  application uses special Sd2Card calls to write to contiguous files in raw mode.
-  These functions reduce write latency so that audio can be recorded with the
-  small amount of RAM in the Arduino.
+  SdFat was developed for high speed data recording.  SdFat was used to
+  implement an audio record/play class, WaveRP, for the Adafruit Wave Shield.
+  This application uses special Sd2Card calls to write to contiguous files in
+  raw mode. These functions reduce write latency so that audio can be recorded
+  with the small amount of RAM in the Arduino.
 
   \section SDcard SD\SDHC Cards
 
@@ -79,9 +79,9 @@
   controllers when resistor voltage dividers are used.
 
   The 5 to 3.3 V level shifter for 5 V Arduinos should be IC based like the
-  74HC4050N based circuit shown in the file SdLevel.png.  The Adafruit Wave Shield
-  uses a 74AHC125N.  Gravitech sells SD and MicroSD Card Adapters based on the
-  74LCX245.
+  74HC4050N based circuit shown in the file SdLevel.png.  The Adafruit Wave
+  Shield uses a 74AHC125N.  Gravitech sells SD and MicroSD Card Adapters based
+  on the 74LCX245.
 
   If you are using a resistor based level shifter and are having problems try
   setting the SPI bus frequency to 4 MHz.  This can be done by using
@@ -89,7 +89,8 @@
 
   \section comment Bugs and Comments
 
-  If you wish to report bugs or have comments, send email to fat16lib@sbcglobal.net.
+  If you wish to report bugs or have comments, send email to
+  fat16lib@sbcglobal.net.
 
   \section SdFatClass SdFat Usage
 
@@ -109,16 +110,16 @@
 
   \note
   The Arduino Print class uses character
-  at a time writes so it was necessary to use a \link SdFile::sync() sync() \endlink
-  function to control when data is written to the SD card.
+  at a time writes so it was necessary to use a \link SdFile::sync() sync()
+  \endlink function to control when data is written to the SD card.
 
   \par
-  An application which writes to a file using \link Print::print() print()\endlink,
-  \link Print::println() println() \endlink
-  or \link SdFile::write write() \endlink must call \link SdFile::sync() sync() \endlink
+  An application which writes to a file using \link Print::print()
+  print()\endlink, \link Print::println() println() \endlink or \link
+  SdFile::write write() \endlink must call \link SdFile::sync() sync() \endlink
   at the appropriate time to force data and directory information to be written
-  to the SD Card.  Data and directory information are also written to the SD card
-  when \link SdFile::close() close() \endlink is called.
+  to the SD Card.  Data and directory information are also written to the SD
+  card when \link SdFile::close() close() \endlink is called.
 
   \par
   Applications must use care calling \link SdFile::sync() sync() \endlink
@@ -127,8 +128,9 @@
   the block that contains the directory entry for update, writing the directory
   block back and reading back the current data block.
 
-  It is possible to open a file with two or more instances of SdFile.  A file may
-  be corrupted if data is written to the file by more than one instance of SdFile.
+  It is possible to open a file with two or more instances of SdFile.  A file
+  may be corrupted if data is written to the file by more than one instance of
+  SdFile.
 
   \section HowTo How to format SD Cards as FAT Volumes
 

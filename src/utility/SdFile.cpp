@@ -19,17 +19,17 @@
 */
 #include "SdFat.h"
 #ifdef __AVR__
-  #include <avr/pgmspace.h>
+#include <avr/pgmspace.h>
 #endif
 #include <Arduino.h>
 //------------------------------------------------------------------------------
 // callback function for date/time
-void (*SdFile::dateTime_)(uint16_t* date, uint16_t* time) = NULL;
+void (*SdFile::dateTime_)(uint16_t *date, uint16_t *time) = NULL;
 
 #if ALLOW_DEPRECATED_FUNCTIONS
-  // suppress cpplint warnings with NOLINT comment
-  void (*SdFile::oldDateTime_)(uint16_t& date, uint16_t& time) = NULL;  // NOLINT
-#endif  // ALLOW_DEPRECATED_FUNCTIONS
+// suppress cpplint warnings with NOLINT comment
+void (*SdFile::oldDateTime_)(uint16_t &date, uint16_t &time) = NULL; // NOLINT
+#endif // ALLOW_DEPRECATED_FUNCTIONS
 //------------------------------------------------------------------------------
 // add a cluster to a file
 uint8_t SdFile::addCluster() {
@@ -67,7 +67,7 @@ uint8_t SdFile::addDirCluster(void) {
 //------------------------------------------------------------------------------
 // cache a file's directory entry
 // return pointer to cached entry or null for failure
-dir_t* SdFile::cacheDirEntry(uint8_t action) {
+dir_t *SdFile::cacheDirEntry(uint8_t action) {
   if (!SdVolume::cacheRawBlock(dirBlock_, action)) {
     return NULL;
   }
@@ -101,13 +101,13 @@ uint8_t SdFile::close(void) {
    Reasons for failure include file is not contiguous, file has zero length
    or an I/O error occurred.
 */
-uint8_t SdFile::contiguousRange(uint32_t* bgnBlock, uint32_t* endBlock) {
+uint8_t SdFile::contiguousRange(uint32_t *bgnBlock, uint32_t *endBlock) {
   // error if no blocks
   if (firstCluster_ == 0) {
     return false;
   }
 
-  for (uint32_t c = firstCluster_; ; c++) {
+  for (uint32_t c = firstCluster_;; c++) {
     uint32_t next;
     if (!vol_->fatGet(c, &next)) {
       return false;
@@ -120,8 +120,7 @@ uint8_t SdFile::contiguousRange(uint32_t* bgnBlock, uint32_t* endBlock) {
         return false;
       }
       *bgnBlock = vol_->clusterStartBlock(firstCluster_);
-      *endBlock = vol_->clusterStartBlock(c)
-                  + vol_->blocksPerCluster_ - 1;
+      *endBlock = vol_->clusterStartBlock(c) + vol_->blocksPerCluster_ - 1;
       return true;
     }
   }
@@ -145,8 +144,8 @@ uint8_t SdFile::contiguousRange(uint32_t* bgnBlock, uint32_t* endBlock) {
    directory is full or an I/O error.
 
 */
-uint8_t SdFile::createContiguous(SdFile* dirFile,
-                                 const char* fileName, uint32_t size) {
+uint8_t SdFile::createContiguous(SdFile *dirFile, const char *fileName,
+                                 uint32_t size) {
   // don't allow zero length file
   if (size == 0) {
     return false;
@@ -178,14 +177,14 @@ uint8_t SdFile::createContiguous(SdFile* dirFile,
    \return The value one, true, is returned for success and
    the value zero, false, is returned for failure.
 */
-uint8_t SdFile::dirEntry(dir_t* dir) {
+uint8_t SdFile::dirEntry(dir_t *dir) {
   // make sure fields on SD are correct
   if (!sync()) {
     return false;
   }
 
   // read entry
-  dir_t* p = cacheDirEntry(SdVolume::CACHE_FOR_READ);
+  dir_t *p = cacheDirEntry(SdVolume::CACHE_FOR_READ);
   if (!p) {
     return false;
   }
@@ -202,7 +201,7 @@ uint8_t SdFile::dirEntry(dir_t* dir) {
    \param[in] dir The directory structure containing the name.
    \param[out] name A 13 byte char array for the formatted name.
 */
-void SdFile::dirName(const dir_t& dir, char* name) {
+void SdFile::dirName(const dir_t &dir, char *name) {
   uint8_t j = 0;
   for (uint8_t i = 0; i < 11; i++) {
     if (dir.name[i] == ' ') {
@@ -230,7 +229,7 @@ void SdFile::dirName(const dir_t& dir, char* name) {
    list to indicate subdirectory level.
 */
 void SdFile::ls(uint8_t flags, uint8_t indent) {
-  dir_t* p;
+  dir_t *p;
 
   rewind();
   while ((p = readDirCache())) {
@@ -283,9 +282,9 @@ void SdFile::ls(uint8_t flags, uint8_t indent) {
 }
 //------------------------------------------------------------------------------
 // format directory name field from a 8.3 name string
-uint8_t SdFile::make83Name(const char* str, uint8_t* name) {
+uint8_t SdFile::make83Name(const char *str, uint8_t *name) {
   uint8_t c;
-  uint8_t n = 7;  // max index for part before dot
+  uint8_t n = 7; // max index for part before dot
   uint8_t i = 0;
   // blank fill name and extension
   while (i < 11) {
@@ -295,31 +294,33 @@ uint8_t SdFile::make83Name(const char* str, uint8_t* name) {
   while ((c = *str++) != '\0') {
     if (c == '.') {
       if (n == 10) {
-        return false;  // only one dot allowed
+        return false; // only one dot allowed
       }
-      n = 10;  // max index for full 8.3 name
-      i = 8;   // place for extension
+      n = 10; // max index for full 8.3 name
+      i = 8;  // place for extension
     } else {
       // illegal FAT characters
       uint8_t b;
-      #if defined(__AVR__)
+#if defined(__AVR__)
       PGM_P p = PSTR("|<>^+=?/[];,*\"\\");
-      while ((b = pgm_read_byte(p++))) if (b == c) {
+      while ((b = pgm_read_byte(p++)))
+        if (b == c) {
           return false;
         }
-      #elif defined(__arm__)
+#elif defined(__arm__)
       const uint8_t valid[] = "|<>^+=?/[];,*\"\\";
       const uint8_t *p = valid;
-      while ((b = *p++)) if (b == c) {
+      while ((b = *p++))
+        if (b == c) {
           return false;
         }
-      #endif
+#endif
       // check size and only allow ASCII printable characters
       if (i > n || c < 0X21 || c > 0X7E) {
         return false;
       }
       // only upper case allowed in 8.3 names - convert lower to upper
-      name[i++] = c < 'a' || c > 'z' ?  c : c + ('A' - 'a');
+      name[i++] = c < 'a' || c > 'z' ? c : c + ('A' - 'a');
     }
   }
   // must have a file name, extension is optional
@@ -338,7 +339,7 @@ uint8_t SdFile::make83Name(const char* str, uint8_t* name) {
    Reasons for failure include this SdFile is already open, \a dir is not a
    directory, \a dirName is invalid or already exists in \a dir.
 */
-uint8_t SdFile::makeDir(SdFile* dir, const char* dirName) {
+uint8_t SdFile::makeDir(SdFile *dir, const char *dirName) {
   dir_t d;
 
   // create a normal file
@@ -361,7 +362,7 @@ uint8_t SdFile::makeDir(SdFile* dir, const char* dirName) {
   }
 
   // cache entry - should already be in cache due to sync() call
-  dir_t* p = cacheDirEntry(SdVolume::CACHE_FOR_WRITE);
+  dir_t *p = cacheDirEntry(SdVolume::CACHE_FOR_WRITE);
   if (!p) {
     return false;
   }
@@ -450,9 +451,9 @@ uint8_t SdFile::makeDir(SdFile* dir, const char* dirName) {
    a directory, \a fileName is invalid, the file does not exist
    or can't be opened in the access mode specified by oflag.
 */
-uint8_t SdFile::open(SdFile* dirFile, const char* fileName, uint8_t oflag) {
+uint8_t SdFile::open(SdFile *dirFile, const char *fileName, uint8_t oflag) {
   uint8_t dname[11];
-  dir_t* p;
+  dir_t *p;
 
   // error if already open
   if (isOpen()) {
@@ -562,7 +563,7 @@ uint8_t SdFile::open(SdFile* dirFile, const char* fileName, uint8_t oflag) {
    See open() by fileName for definition of flags and return values.
 
 */
-uint8_t SdFile::open(SdFile* dirFile, uint16_t index, uint8_t oflag) {
+uint8_t SdFile::open(SdFile *dirFile, uint16_t index, uint8_t oflag) {
   // error if already open
   if (isOpen()) {
     return false;
@@ -581,14 +582,14 @@ uint8_t SdFile::open(SdFile* dirFile, uint16_t index, uint8_t oflag) {
   }
 
   // read entry into cache
-  dir_t* p = dirFile->readDirCache();
+  dir_t *p = dirFile->readDirCache();
   if (p == NULL) {
     return false;
   }
 
   // error if empty slot or '.' or '..'
-  if (p->name[0] == DIR_NAME_FREE ||
-      p->name[0] == DIR_NAME_DELETED || p->name[0] == '.') {
+  if (p->name[0] == DIR_NAME_FREE || p->name[0] == DIR_NAME_DELETED ||
+      p->name[0] == '.') {
     return false;
   }
   // open cached entry
@@ -598,7 +599,7 @@ uint8_t SdFile::open(SdFile* dirFile, uint16_t index, uint8_t oflag) {
 // open a cached directory entry. Assumes vol_ is initializes
 uint8_t SdFile::openCachedEntry(uint8_t dirIndex, uint8_t oflag) {
   // location of entry in cache
-  dir_t* p = SdVolume::cacheBuffer_.dir + dirIndex;
+  dir_t *p = SdVolume::cacheBuffer_.dir + dirIndex;
 
   // write or truncate is an error for a directory or read-only file
   if (p->attributes & (DIR_ATT_READ_ONLY | DIR_ATT_DIRECTORY)) {
@@ -650,7 +651,7 @@ uint8_t SdFile::openCachedEntry(uint8_t dirIndex, uint8_t oflag) {
    Reasons for failure include the FAT volume has not been initialized
    or it a FAT12 volume.
 */
-uint8_t SdFile::openRoot(SdVolume* vol) {
+uint8_t SdFile::openRoot(SdVolume *vol) {
   // error if file is already open
   if (isOpen()) {
     return false;
@@ -689,7 +690,7 @@ uint8_t SdFile::openRoot(SdVolume* vol) {
    \param[in] dir The directory structure containing the name.
    \param[in] width Blank fill name if length is less than \a width.
 */
-void SdFile::printDirName(const dir_t& dir, uint8_t width) {
+void SdFile::printDirName(const dir_t &dir, uint8_t width) {
   uint8_t w = 0;
   for (uint8_t i = 0; i < 11; i++) {
     if (dir.name[i] == ' ') {
@@ -766,8 +767,8 @@ void SdFile::printTwoDigits(uint8_t v) {
    read() called before a file has been opened, corrupt file system
    or an I/O error occurred.
 */
-int16_t SdFile::read(void* buf, uint16_t nbyte) {
-  uint8_t* dst = reinterpret_cast<uint8_t*>(buf);
+int16_t SdFile::read(void *buf, uint16_t nbyte) {
+  uint8_t *dst = reinterpret_cast<uint8_t *>(buf);
 
   // error if not open or write only
   if (!isOpen() || !(flags_ & O_READ)) {
@@ -782,8 +783,8 @@ int16_t SdFile::read(void* buf, uint16_t nbyte) {
   // amount left to read
   uint16_t toRead = nbyte;
   while (toRead > 0) {
-    uint32_t block;  // raw device block number
-    uint16_t offset = curPosition_ & 0X1FF;  // offset in block
+    uint32_t block;                         // raw device block number
+    uint16_t offset = curPosition_ & 0X1FF; // offset in block
     if (type_ == FAT_FILE_TYPE_ROOT16) {
       block = vol_->rootDirStart() + (curPosition_ >> 9);
     } else {
@@ -821,8 +822,8 @@ int16_t SdFile::read(void* buf, uint16_t nbyte) {
       if (!SdVolume::cacheRawBlock(block, SdVolume::CACHE_FOR_READ)) {
         return -1;
       }
-      uint8_t* src = SdVolume::cacheBuffer_.data + offset;
-      uint8_t* end = src + n;
+      uint8_t *src = SdVolume::cacheBuffer_.data + offset;
+      uint8_t *end = src + n;
       while (src != end) {
         *dst++ = *src++;
       }
@@ -844,7 +845,7 @@ int16_t SdFile::read(void* buf, uint16_t nbyte) {
    readDir() called before a directory has been opened, this is not
    a directory file or an I/O error occurred.
 */
-int8_t SdFile::readDir(dir_t* dir) {
+int8_t SdFile::readDir(dir_t *dir) {
   int8_t n;
   // if not a directory file or miss-positioned return an error
   if (!isDir() || (0X1F & curPosition_)) {
@@ -871,7 +872,7 @@ int8_t SdFile::readDir(dir_t* dir) {
 //------------------------------------------------------------------------------
 // Read next directory entry into the cache
 // Assumes file is correctly positioned
-dir_t* SdFile::readDirCache(void) {
+dir_t *SdFile::readDirCache(void) {
   // error if not directory
   if (!isDir()) {
     return NULL;
@@ -913,7 +914,7 @@ uint8_t SdFile::remove(void) {
   }
 
   // cache directory entry
-  dir_t* d = cacheDirEntry(SdVolume::CACHE_FOR_WRITE);
+  dir_t *d = cacheDirEntry(SdVolume::CACHE_FOR_WRITE);
   if (!d) {
     return false;
   }
@@ -946,7 +947,7 @@ uint8_t SdFile::remove(void) {
    \a dirFile is not a directory, \a fileName is not found
    or an I/O error occurred.
 */
-uint8_t SdFile::remove(SdFile* dirFile, const char* fileName) {
+uint8_t SdFile::remove(SdFile *dirFile, const char *fileName) {
   SdFile file;
   if (!file.open(dirFile, fileName, O_WRITE)) {
     return false;
@@ -979,7 +980,7 @@ uint8_t SdFile::rmDir(void) {
 
   // make sure directory is empty
   while (curPosition_ < fileSize_) {
-    dir_t* p = readDirCache();
+    dir_t *p = readDirCache();
     if (p == NULL) {
       return false;
     }
@@ -1025,7 +1026,7 @@ uint8_t SdFile::rmRfStar(void) {
     // remember position
     uint16_t index = curPosition_ / 32;
 
-    dir_t* p = readDirCache();
+    dir_t *p = readDirCache();
     if (!p) {
       return false;
     }
@@ -1136,7 +1137,7 @@ uint8_t SdFile::sync(uint8_t blocking) {
   }
 
   if (flags_ & F_FILE_DIR_DIRTY) {
-    dir_t* d = cacheDirEntry(SdVolume::CACHE_FOR_WRITE);
+    dir_t *d = cacheDirEntry(SdVolume::CACHE_FOR_WRITE);
     if (!d) {
       return false;
     }
@@ -1201,20 +1202,13 @@ uint8_t SdFile::sync(uint8_t blocking) {
    the value zero, false, is returned for failure.
 */
 uint8_t SdFile::timestamp(uint8_t flags, uint16_t year, uint8_t month,
-                          uint8_t day, uint8_t hour, uint8_t minute, uint8_t second) {
-  if (!isOpen()
-      || year < 1980
-      || year > 2107
-      || month < 1
-      || month > 12
-      || day < 1
-      || day > 31
-      || hour > 23
-      || minute > 59
-      || second > 59) {
+                          uint8_t day, uint8_t hour, uint8_t minute,
+                          uint8_t second) {
+  if (!isOpen() || year < 1980 || year > 2107 || month < 1 || month > 12 ||
+      day < 1 || day > 31 || hour > 23 || minute > 59 || second > 59) {
     return false;
   }
-  dir_t* d = cacheDirEntry(SdVolume::CACHE_FOR_WRITE);
+  dir_t *d = cacheDirEntry(SdVolume::CACHE_FOR_WRITE);
   if (!d) {
     return false;
   }
@@ -1327,9 +1321,9 @@ uint8_t SdFile::truncate(uint32_t length) {
    for a read-only file, device is full, a corrupt file system or an I/O error.
 
 */
-size_t SdFile::write(const void* buf, uint16_t nbyte) {
+size_t SdFile::write(const void *buf, uint16_t nbyte) {
   // convert void* to uint8_t*  -  must be before goto statements
-  const uint8_t* src = reinterpret_cast<const uint8_t*>(buf);
+  const uint8_t *src = reinterpret_cast<const uint8_t *>(buf);
 
   // number of bytes left to write  -  must be before goto statements
   uint16_t nToWrite = nbyte;
@@ -1411,8 +1405,8 @@ size_t SdFile::write(const void* buf, uint16_t nbyte) {
           goto writeErrorReturn;
         }
       }
-      uint8_t* dst = SdVolume::cacheBuffer_.data + blockOffset;
-      uint8_t* end = dst + n;
+      uint8_t *dst = SdVolume::cacheBuffer_.data + blockOffset;
+      uint8_t *end = dst + n;
       while (dst != end) {
         *dst++ = *src++;
       }
@@ -1438,7 +1432,7 @@ size_t SdFile::write(const void* buf, uint16_t nbyte) {
 
 writeErrorReturn:
   // return for write error
-  //writeError = true;
+  // writeError = true;
   setWriteError();
   return 0;
 }
@@ -1448,18 +1442,14 @@ writeErrorReturn:
 
    Use SdFile::writeError to check for errors.
 */
-size_t SdFile::write(uint8_t b) {
-  return write(&b, 1);
-}
+size_t SdFile::write(uint8_t b) { return write(&b, 1); }
 //------------------------------------------------------------------------------
 /**
    Write a string to a file. Used by the Arduino Print class.
 
    Use SdFile::writeError to check for errors.
 */
-size_t SdFile::write(const char* str) {
-  return write(str, strlen(str));
-}
+size_t SdFile::write(const char *str) { return write(str, strlen(str)); }
 #ifdef __AVR__
 //------------------------------------------------------------------------------
 /**

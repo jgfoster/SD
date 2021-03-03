@@ -22,7 +22,7 @@ File_Base::File_Base(SdFile f, const char *n) {
   // oh man you are kidding me, new() doesn't exist? Ok we do it by hand!
   _file = (SdFile *)malloc(sizeof(SdFile));
   if (_file) {
-    memcpy((void*)_file, (void*)&f, sizeof(SdFile));
+    memcpy((void *)_file, (void *)&f, sizeof(SdFile));
 
     strncpy(_name, n, 12);
     _name[12] = 0;
@@ -40,23 +40,16 @@ File_Base::File_Base(SdFile f, const char *n) {
 File_Base::File_Base(void) {
   _file = 0;
   _name[0] = 0;
-  //Serial.print("Created empty file object");
+  // Serial.print("Created empty file object");
 }
 
 // returns a pointer to the file name
-char *File_Base::name(void) {
-  return _name;
-}
+char *File_Base::name(void) { return _name; }
 
 // a directory is a special type of file
-bool File_Base::isDirectory(void) {
-  return (_file && _file->isDir());
-}
+bool File_Base::isDirectory(void) { return (_file && _file->isDir()); }
 
-
-size_t File_Base::write(uint8_t val) {
-  return write(&val, 1);
-}
+size_t File_Base::write(uint8_t val) { return write(&val, 1); }
 
 size_t File_Base::write(const uint8_t *buf, size_t size) {
   size_t t;
@@ -81,7 +74,7 @@ int File_Base::availableForWrite() {
 }
 
 int File_Base::peek() {
-  if (! _file) {
+  if (!_file) {
     return 0;
   }
 
@@ -108,7 +101,7 @@ int File_Base::read(void *buf, uint16_t nbyte) {
 }
 
 int File_Base::available() {
-  if (! _file) {
+  if (!_file) {
     return 0;
   }
 
@@ -124,7 +117,7 @@ void File_Base::flush() {
 }
 
 bool File_Base::seek(uint32_t pos) {
-  if (! _file) {
+  if (!_file) {
     return false;
   }
 
@@ -132,14 +125,14 @@ bool File_Base::seek(uint32_t pos) {
 }
 
 uint32_t File_Base::position() {
-  if (! _file) {
+  if (!_file) {
     return -1;
   }
   return _file->curPosition();
 }
 
 uint32_t File_Base::size() {
-  if (! _file) {
+  if (!_file) {
     return 0;
   }
   return _file->fileSize();
@@ -161,8 +154,7 @@ void File_Base::close() {
 
 File_Base::operator bool() {
   if (_file) {
-    return  _file->isOpen();
+    return _file->isOpen();
   }
   return false;
 }
-

@@ -3,15 +3,14 @@
 
   This example shows how use the utility libraries on which the'
   SD library is based in order to get info about your SD card.
-  Very useful for testing a card when you're not sure whether its working or not.
-  Pin numbers reflect the default SPI pins for Uno and Nano models
-  The circuit:
-    SD card attached to SPI bus as follows:
+  Very useful for testing a card when you're not sure whether its working or
+ not. Pin numbers reflect the default SPI pins for Uno and Nano models The
+ circuit: SD card attached to SPI bus as follows:
  ** SDO - pin 11 on Arduino Uno/Duemilanove/Diecimila
  ** SDI - pin 12 on Arduino Uno/Duemilanove/Diecimila
  ** CLK - pin 13 on Arduino Uno/Duemilanove/Diecimila
  ** CS - depends on your SD card shield or module.
- 		Pin 10 used here for consistency with other Arduino examples
+                Pin 10 used here for consistency with other Arduino examples
 
   created  28 Mar 2011
   by Limor Fried
@@ -19,8 +18,8 @@
   by Tom Igoe
 */
 // include the SD library:
-#include <SPI.h>
 #include <SD.h>
+#include <SPI.h>
 
 // set up variables using the SD utility library functions:
 Sd2Card card;
@@ -42,7 +41,6 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-
   Serial.print("\nInitializing SD card...");
 
   // we'll use the initialization code from the utility libraries
@@ -51,8 +49,10 @@ void setup() {
     Serial.println("initialization failed. Things to check:");
     Serial.println("* is a card inserted?");
     Serial.println("* is your wiring correct?");
-    Serial.println("* did you change the chipSelect pin to match your shield or module?");
-    while (1);
+    Serial.println(
+        "* did you change the chipSelect pin to match your shield or module?");
+    while (1)
+      ;
   } else {
     Serial.println("Wiring is correct and a card is present.");
   }
@@ -61,23 +61,26 @@ void setup() {
   Serial.println();
   Serial.print("Card type:         ");
   switch (card.type()) {
-    case SD_CARD_TYPE_SD1:
-      Serial.println("SD1");
-      break;
-    case SD_CARD_TYPE_SD2:
-      Serial.println("SD2");
-      break;
-    case SD_CARD_TYPE_SDHC:
-      Serial.println("SDHC");
-      break;
-    default:
-      Serial.println("Unknown");
+  case SD_CARD_TYPE_SD1:
+    Serial.println("SD1");
+    break;
+  case SD_CARD_TYPE_SD2:
+    Serial.println("SD2");
+    break;
+  case SD_CARD_TYPE_SDHC:
+    Serial.println("SDHC");
+    break;
+  default:
+    Serial.println("Unknown");
   }
 
-  // Now we will try to open the 'volume'/'partition' - it should be FAT16 or FAT32
+  // Now we will try to open the 'volume'/'partition' - it should be FAT16 or
+  // FAT32
   if (!volume.init(card)) {
-    Serial.println("Could not find FAT16/FAT32 partition.\nMake sure you've formatted the card");
-    while (1);
+    Serial.println("Could not find FAT16/FAT32 partition.\nMake sure you've "
+                   "formatted the card");
+    while (1)
+      ;
   }
 
   Serial.print("Clusters:          ");
@@ -94,9 +97,9 @@ void setup() {
   Serial.print("Volume type is:    FAT");
   Serial.println(volume.fatType(), DEC);
 
-  volumesize = volume.blocksPerCluster();    // clusters are collections of blocks
-  volumesize *= volume.clusterCount();       // we'll have a lot of clusters
-  volumesize /= 2;                           // SD card blocks are always 512 bytes (2 blocks are 1KB)
+  volumesize = volume.blocksPerCluster(); // clusters are collections of blocks
+  volumesize *= volume.clusterCount();    // we'll have a lot of clusters
+  volumesize /= 2; // SD card blocks are always 512 bytes (2 blocks are 1KB)
   Serial.print("Volume size (Kb):  ");
   Serial.println(volumesize);
   Serial.print("Volume size (Mb):  ");
@@ -113,5 +116,4 @@ void setup() {
   root.close();
 }
 
-void loop(void) {
-}
+void loop(void) {}

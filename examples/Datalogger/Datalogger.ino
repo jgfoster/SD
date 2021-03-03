@@ -12,7 +12,7 @@
  ** SDI - pin 12
  ** CLK - pin 13
  ** CS - depends on your SD card shield or module.
- 		Pin 10 used here for consistency with other Arduino examples
+                Pin 10 used here for consistency with other Arduino examples
     (for MKRZero SD: SDCARD_SS_PIN)
 
   created  24 Nov 2010
@@ -23,8 +23,8 @@
 
 */
 
-#include <SPI.h>
 #include <SD.h>
+#include <SPI.h>
 
 const int chipSelect = 10;
 
@@ -32,7 +32,8 @@ void setup() {
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
   // wait for Serial Monitor to connect. Needed for native USB port boards only:
-  while (!Serial);
+  while (!Serial)
+    ;
 
   Serial.print("Initializing SD card...");
 
@@ -40,9 +41,12 @@ void setup() {
     Serial.println("initialization failed. Things to check:");
     Serial.println("1. is a card inserted?");
     Serial.println("2. is your wiring correct?");
-    Serial.println("3. did you change the chipSelect pin to match your shield or module?");
-    Serial.println("Note: press reset or reopen this serial monitor after fixing your issue!");
-    while (true);
+    Serial.println(
+        "3. did you change the chipSelect pin to match your shield or module?");
+    Serial.println("Note: press reset or reopen this serial monitor after "
+                   "fixing your issue!");
+    while (true)
+      ;
   }
 
   Serial.println("initialization done.");

@@ -85,18 +85,18 @@ uint8_t const DATA_RES_ACCEPTED = 0X05;
 //------------------------------------------------------------------------------
 typedef struct CID {
   // byte 0
-  uint8_t mid;  // Manufacturer ID
+  uint8_t mid; // Manufacturer ID
   // byte 1-2
-  char oid[2];  // OEM/Application ID
+  char oid[2]; // OEM/Application ID
   // byte 3-7
-  char pnm[5];  // Product name
+  char pnm[5]; // Product name
   // byte 8
-  unsigned prv_m : 4;  // Product revision n.m
+  unsigned prv_m : 4; // Product revision n.m
   unsigned prv_n : 4;
   // byte 9-12
-  uint32_t psn;  // Product serial number
+  uint32_t psn; // Product serial number
   // byte 13
-  unsigned mdt_year_high : 4;  // Manufacturing date
+  unsigned mdt_year_high : 4; // Manufacturing date
   unsigned reserved : 4;
   // byte 14
   unsigned mdt_month : 4;
@@ -156,7 +156,7 @@ typedef struct CSDV1 {
   unsigned write_partial : 1;
   unsigned write_bl_len_low : 2;
   // byte 14
-  unsigned reserved5: 2;
+  unsigned reserved5 : 2;
   unsigned file_format : 2;
   unsigned tmp_write_protect : 1;
   unsigned perm_write_protect : 1;
@@ -213,7 +213,7 @@ typedef struct CSDV2 {
   unsigned write_partial : 1;
   unsigned write_bl_len_low : 2;
   // byte 14
-  unsigned reserved7: 2;
+  unsigned reserved7 : 2;
   unsigned file_format : 2;
   unsigned tmp_write_protect : 1;
   unsigned perm_write_protect : 1;
@@ -229,4 +229,4 @@ union csd_t {
   csd1_t v1;
   csd2_t v2;
 };
-#endif  // SdInfo_h
+#endif // SdInfo_h

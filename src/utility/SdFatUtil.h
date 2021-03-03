@@ -25,14 +25,14 @@
 */
 #include <Arduino.h>
 #ifdef __AVR__
-  #include <avr/pgmspace.h>
-  /** Store and print a string in flash memory.*/
-  #define PgmPrint(x) SerialPrint_P(PSTR(x))
-  /** Store and print a string in flash memory followed by a CR/LF.*/
-  #define PgmPrintln(x) SerialPrintln_P(PSTR(x))
-  /** Defined so doxygen works for function definitions. */
+#include <avr/pgmspace.h>
+/** Store and print a string in flash memory.*/
+#define PgmPrint(x) SerialPrint_P(PSTR(x))
+/** Store and print a string in flash memory followed by a CR/LF.*/
+#define PgmPrintln(x) SerialPrintln_P(PSTR(x))
+/** Defined so doxygen works for function definitions. */
 #endif
-#define NOINLINE __attribute__((noinline,unused))
+#define NOINLINE __attribute__((noinline, unused))
 #define UNUSEDOK __attribute__((unused))
 
 #if UINTPTR_MAX == 0xFFFF
@@ -48,17 +48,17 @@ typedef int64_t ptr_as_int;
 //------------------------------------------------------------------------------
 /** Return the number of bytes currently free in RAM. */
 static UNUSEDOK int FreeRam(void) {
-  extern int  __bss_end;
-  extern int* __brkval;
+  extern int __bss_end;
+  extern int *__brkval;
   int free_memory;
   if (reinterpret_cast<ptr_as_int>(__brkval) == 0) {
     // if no heap use from end of bss section
-    free_memory = reinterpret_cast<ptr_as_int>(&free_memory)
-                  - reinterpret_cast<ptr_as_int>(&__bss_end);
+    free_memory = reinterpret_cast<ptr_as_int>(&free_memory) -
+                  reinterpret_cast<ptr_as_int>(&__bss_end);
   } else {
     // use from top of stack to heap
-    free_memory = reinterpret_cast<ptr_as_int>(&free_memory)
-                  - reinterpret_cast<ptr_as_int>(__brkval);
+    free_memory = reinterpret_cast<ptr_as_int>(&free_memory) -
+                  reinterpret_cast<ptr_as_int>(__brkval);
   }
   return free_memory;
 }
@@ -84,5 +84,5 @@ static NOINLINE void SerialPrintln_P(PGM_P str) {
   SerialPrint_P(str);
   Serial.println();
 }
-#endif  // __AVR__
-#endif  // #define SdFatUtil_h
+#endif // __AVR__
+#endif // #define SdFatUtil_h
