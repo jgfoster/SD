@@ -8,19 +8,22 @@ bundle exec arduino_ci.rb  --skip-unittests
 #include "ArduinoUnitTests.h"
 #include "SD_CI.h"
 #include <fstream>
+#include <iostream>
 
 unittest_setup() { SD_CI.removeAll(); }
 
 unittest_teardown() { SD_CI.removeAll(); }
 
 unittest(exists) {
-  assertFalse(SD_CI.exists("noSuchFile.txt"));
-  File_CI existingFile = SD_CI.open("existingFile.txt", FILE_WRITE);
-  existingFile.close();
-  assertTrue(SD_CI.exists("existingFile.txt"));
+  assertFalse(SD_CI.exists("file.txt"));
+  File_CI file = SD_CI.open("file.txt", FILE_WRITE);
+  file.close();
+  assertTrue(SD_CI.exists("file.txt"));
 }
 
 unittest(mkdir) {
+  assertTrue(SD_CI.mkdir("test_directory"));
+  assertTrue(SD_CI.mkdir("test_directory/a"));
   assertTrue(SD_CI.mkdir("test_directory/a/b"));
   assertTrue(SD_CI.mkdir("test_directory/a/c"));
   assertTrue(SD_CI.exists("test_directory"));
@@ -64,6 +67,8 @@ unittest(remove) {
 
 unittest(rmdir) {
   // set up
+  SD_CI.mkdir("test_directory");
+  SD_CI.mkdir("test_directory/a");
   SD_CI.mkdir("test_directory/a/a");
   SD_CI.mkdir("test_directory/a/b");
   SD_CI.mkdir("test_directory/a/c");
@@ -77,10 +82,6 @@ unittest(rmdir) {
   assertTrue(SD_CI.exists("test_directory/a/a"));
   // make sure removed dir no longer exists
   assertFalse(SD_CI.exists("test_directory/a/c"));
-
-  // remove directory with sub directories
-  assertTrue(SD_CI.rmdir("test_directory"));
-  assertFalse(SD_CI.exists("test_directory"));
 }
 
 unittest(name) {
@@ -241,4 +242,50 @@ unittest(isDirectory) {
   testFile.close();
   readFile.close();
 }
+
+unittest(next) {
+  File_CI file;
+
+  file = SD_CI.open("x", FILE_WRITE);
+  file.close();
+  SD_CI.open("x", O_WRITE).close();
+
+  SD_CI.mkdir("d");
+
+  file = SD_CI.open("a", FILE_WRITE);
+  file.close();
+  SD_CI.open("a", O_WRITE).close();
+
+  File_CI root = SD_CI.open("/");
+  assertTrue(root);
+  assertTrue(root.isDirectory());
+
+  file = root.openNextFile();
+  assertTrue(file);
+  assertEqual(std::string("a"), file.name());
+  assertFalse(file.isDirectory());
+  file.close();
+
+  file = root.openNextFile();
+  assertTrue(file);
+  assertEqual(std::string("d/"), file.name());
+  assertTrue(file.isDirectory());
+  file.close();
+
+  file = root.openNextFile();
+  assertTrue(file);
+  assertEqual(std::string("x"), file.name());
+  assertFalse(file.isDirectory());
+  file.close();
+
+  file = root.openNextFile();
+  assertFalse(file);
+
+  root.rewindDirectory();
+  file = root.openNextFile();
+  assertTrue(file);
+  assertEqual(std::string("a"), file.name());
+  file.close();
+}
+
 unittest_main()
