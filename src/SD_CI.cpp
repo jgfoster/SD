@@ -24,7 +24,9 @@ bool SDClass_CI::mkdir(const std::string &path) {
   }
   size_t index = fullPath.find_last_of('/', fullPath.size() - 2);
   assert(index == 0 || exists(fullPath.substr(0, index + 1)));
-  fileSystem.emplace(fullPath, "");
+  // save directory base name as "file contents" to simplify name() lookup
+  std::string dirName = fullPath.substr(index + 1, fullPath.size() - index - 2);
+  fileSystem.emplace(fullPath, dirName);
   return true;
 }
 

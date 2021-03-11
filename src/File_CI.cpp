@@ -33,15 +33,12 @@ File_CI::File_CI(const std::string &path, uint8_t mode) {
 // find the file name in the full path
 const char *File_CI::name() const {
   size_t index;
-  if (isDirectory()) {
-    index = _path.find_last_of('/', _path.size() - 2);
+  if (isDirectory()) { // name saved as "contents"
+    return SD.contentsOf(_path)->c_str();
   } else {
     index = _path.find_last_of('/');
+    return _path.c_str() + index + 1;
   }
-  if (index == std::string::npos) {
-    index = -1;
-  }
-  return _path.c_str() + index + 1;
 }
 
 // get next char without advancing position

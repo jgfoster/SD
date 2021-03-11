@@ -16,7 +16,7 @@ unittest_teardown() { SD.removeAll(); }
 
 unittest(exists) {
   assertFalse(SD.exists("file.txt"));
-  File_CI file = SD.open("file.txt", FILE_WRITE);
+  File file = SD.open("file.txt", FILE_WRITE);
   file.close();
   assertTrue(SD.exists("file.txt"));
 }
@@ -33,23 +33,23 @@ unittest(mkdir) {
 
 unittest(open) {
   // create file
-  File_CI writeFile = SD.open("file.txt", FILE_WRITE);
+  File writeFile = SD.open("file.txt", FILE_WRITE);
   writeFile.close();
   // open file for read should exist
-  File_CI readFile2 = SD.open("file.txt", FILE_READ);
+  File readFile2 = SD.open("file.txt", FILE_READ);
   assertTrue(readFile2.isOpen());
   readFile2.close();
 }
 
 unittest(close) {
   // close write file
-  File_CI file = SD.open("file.txt", FILE_WRITE);
+  File file = SD.open("file.txt", FILE_WRITE);
   assertTrue(file.isOpen());
   file.close();
   assertFalse(file.isOpen());
 
   // close read file
-  File_CI readFile = SD.open("file.txt", FILE_READ);
+  File readFile = SD.open("file.txt", FILE_READ);
   assertTrue(readFile.isOpen());
   readFile.close();
   assertFalse(readFile.isOpen());
@@ -57,7 +57,7 @@ unittest(close) {
 
 unittest(remove) {
   // set up
-  File_CI file = SD.open("file.txt", FILE_WRITE);
+  File file = SD.open("file.txt", FILE_WRITE);
   file.close();
   assertTrue(SD.exists("file.txt"));
 
@@ -72,7 +72,7 @@ unittest(rmdir) {
   SD.mkdir("test_directory/a/a");
   SD.mkdir("test_directory/a/b");
   SD.mkdir("test_directory/a/c");
-  File_CI file = SD.open("test_directory/a/a/file.txt", FILE_WRITE);
+  File file = SD.open("test_directory/a/a/file.txt", FILE_WRITE);
   file.close();
 
   // remove directory
@@ -86,20 +86,23 @@ unittest(rmdir) {
 
 unittest(name) {
   // set up
-  File_CI file = SD.open("newFile.txt", FILE_WRITE);
+  File file = SD.open("newFile.txt", FILE_WRITE);
+  assertEqual("newFile.txt", file.name());
+  file.close();
 
-  char expected[] = "newFile.txt";
-  assertEqual(expected, file.name());
+  SD.mkdir("dir");
+  file = SD.open("dir");
+  assertEqual("dir", file.name());
   file.close();
 }
 
 unittest(seek) {
   // set up
-  File_CI file = SD.open("seek.txt", FILE_WRITE);
+  File file = SD.open("seek.txt", FILE_WRITE);
   char write[] = "Hide and Seek.";
   file.write(write, sizeof(write) - 1);
   file.close();
-  File_CI read = SD.open("seek.txt", FILE_READ);
+  File read = SD.open("seek.txt", FILE_READ);
 
   // Testing
   char readFrom[4];
@@ -112,18 +115,18 @@ unittest(seek) {
 
 unittest(read) {
   // set up
-  File_CI file = SD.open("birthday.txt", FILE_WRITE);
+  File file = SD.open("birthday.txt", FILE_WRITE);
   char toWrite[] = "Happy Birthday to You!";
   file.write(toWrite, sizeof(toWrite) - 1);
   file.close();
 
-  File_CI file2 = SD.open("lines.txt", FILE_WRITE);
+  File file2 = SD.open("lines.txt", FILE_WRITE);
   char toWrite2[] = "line 1\nline2";
   file2.write(toWrite2, sizeof(toWrite2) - 1);
   file2.close();
 
   // testing
-  File_CI readFile = SD.open("birthday.txt", FILE_READ);
+  File readFile = SD.open("birthday.txt", FILE_READ);
   size_t size = readFile.size();
   char readFromFile[size + 1];
   readFile.read(readFromFile, size);
@@ -132,7 +135,7 @@ unittest(read) {
 
   // assertEqual(toWrite, readFromFile);
 
-  File_CI readFile2 = SD.open("lines.txt", FILE_READ);
+  File readFile2 = SD.open("lines.txt", FILE_READ);
   char readFromFile2[7 + 1];
   char readFromFile3[5 + 1];
   readFile2.read(readFromFile2, 7);
@@ -148,7 +151,7 @@ unittest(read) {
 
 unittest(write) {
   // open new file for writing
-  File_CI writeFile = SD.open("wood.txt", FILE_WRITE);
+  File writeFile = SD.open("wood.txt", FILE_WRITE);
   char toWrite[] = "How much wood could a wood pecker peck?\n";
   writeFile.write(toWrite, sizeof(toWrite) - 1);
 
@@ -162,13 +165,13 @@ unittest(write) {
   writeFile.close();
 
   // open old writing file to write at end.
-  File_CI writeFile2 = SD.open("wood.txt", FILE_WRITE);
+  File writeFile2 = SD.open("wood.txt", FILE_WRITE);
   char toWrite2[] = "A lot of wood.\n";
   writeFile2.write(toWrite2, sizeof(toWrite2) - 1);
   writeFile2.close();
 
   // check old writing file
-  File_CI readWrite2 = SD.open("wood.txt", FILE_READ);
+  File readWrite2 = SD.open("wood.txt", FILE_READ);
   size_t size2 = readWrite2.size();
   char toRead2[size2 + 1];
   readWrite2.read(toRead2, size2);
@@ -181,7 +184,7 @@ unittest(write) {
 
 unittest(size) {
   // setup
-  File_CI sizeFile = SD.open("size.txt", FILE_WRITE);
+  File sizeFile = SD.open("size.txt", FILE_WRITE);
   char toWrite[] = "Test text\n";
   sizeFile.write(toWrite, sizeof(toWrite) - 1);
   sizeFile.close();
@@ -193,18 +196,18 @@ unittest(size) {
 
 unittest(peek) {
   // set up
-  File_CI peekFile = SD.open("peek.txt", FILE_WRITE);
+  File peekFile = SD.open("peek.txt", FILE_WRITE);
   char toWrite[] = "Peek file content\n";
   peekFile.write(toWrite, sizeof(toWrite) - 1);
   peekFile.close();
 
   // Test
-  File_CI readPeek = SD.open("peek.txt", FILE_READ);
+  File readPeek = SD.open("peek.txt", FILE_READ);
   assertEqual('P', readPeek.peek());
   assertEqual('P', readPeek.peek());
   readPeek.close();
 
-  File_CI readWritePeek = SD.open("peek.txt", FILE_WRITE);
+  File readWritePeek = SD.open("peek.txt", FILE_WRITE);
   readWritePeek.seek(0);
   assertEqual('P', readWritePeek.peek());
   assertEqual('P', readWritePeek.peek());
@@ -213,7 +216,7 @@ unittest(peek) {
 
 unittest(position) {
   // set up
-  File_CI posFile = SD.open("pos.txt", FILE_WRITE);
+  File posFile = SD.open("pos.txt", FILE_WRITE);
   char toWrite[] = "This is the position file.\n";
   posFile.write(toWrite, sizeof(toWrite) - 1);
 
@@ -227,13 +230,13 @@ unittest(position) {
 unittest(isDirectory) {
   // set up
   SD.mkdir("test");
-  File_CI toRead = SD.open("read.txt", FILE_WRITE);
+  File toRead = SD.open("read.txt", FILE_WRITE);
   toRead.close();
-  File_CI testFile = SD.open("test.txt", FILE_WRITE);
-  File_CI readFile = SD.open("read.txt", FILE_READ);
+  File testFile = SD.open("test.txt", FILE_WRITE);
+  File readFile = SD.open("read.txt", FILE_READ);
 
   // test
-  File_CI myDir = SD.open("test");
+  File myDir = SD.open("test");
   assertTrue(myDir.isDirectory());
   assertFalse(testFile.isDirectory());
   assertFalse(readFile.isDirectory());
@@ -244,7 +247,7 @@ unittest(isDirectory) {
 }
 
 unittest(next) {
-  File_CI file;
+  File file;
 
   file = SD.open("x", FILE_WRITE);
   file.close();
@@ -256,7 +259,7 @@ unittest(next) {
   file.close();
   SD.open("a", O_WRITE).close();
 
-  File_CI root = SD.open("/");
+  File root = SD.open("/");
   assertTrue(root);
   assertTrue(root.isDirectory());
 
@@ -268,7 +271,7 @@ unittest(next) {
 
   file = root.openNextFile();
   assertTrue(file);
-  assertEqual(std::string("d/"), file.name());
+  assertEqual(std::string("d"), file.name());
   assertTrue(file.isDirectory());
   file.close();
 
