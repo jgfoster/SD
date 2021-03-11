@@ -20,10 +20,12 @@
 #ifdef MOCK_PINS_COUNT
 #define SDClass_CI SDClass
 #define File_CI File
+#define SD_CI SD
 #include <WString.h>
 #else
 #define SDClass_Base SDClass
 #define File_Base File
+#define SD_Base SD
 #endif
 
 #include "utility/SdFat.h"
@@ -129,20 +131,20 @@ private:
   friend bool callback_openPath(SdFile &, const char *, bool, void *);
 };
 
-extern SDClass_Base SD;
+extern SDClass_Base SD_Base;
 
 }; // namespace SDLib
 
-// We enclose File_Base and SD classes in namespace SDLib to avoid conflicts
-// with others legacy libraries that redefines File_Base class.
+// We enclose File and SD classes in namespace SDLib to avoid conflicts
+// with others legacy libraries that redefines File class.
 
 // This ensure compatibility with sketches that uses only SD library
 using namespace SDLib;
 
-// This allows sketches to use SDLib::File_Base with other libraries (in the
-// sketch you must use SDFile instead of File_Base to disambiguate)
+// This allows sketches to use SDLib::File with other libraries (in the
+// sketch you must use SDFile instead of File to disambiguate)
 typedef SDLib::File_Base SDFile;
 typedef SDLib::SDClass_Base SDFileSystemClass;
-#define SDFileSystem SDLib::SD
+#define SDFileSystem SDLib::SD_Base
 
 #endif

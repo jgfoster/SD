@@ -606,6 +606,6 @@ void File_Base::rewindDirectory(void) {
   }
 }
 
-SDClass_Base SD;
+SDClass_Base SD_Base;
 
 }; // namespace SDLib

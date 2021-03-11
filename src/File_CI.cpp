@@ -14,7 +14,7 @@ namespace SDLib {
 File_CI::File_CI(const std::string &path) {
   assert(path.size());
   assert(path.back() == '/');
-  assert(SD_CI.exists(path));
+  assert(SD.exists(path));
   _isOpen = true;
   _path = path;
   _current = path;
@@ -24,7 +24,7 @@ File_CI::File_CI(const std::string &path) {
 File_CI::File_CI(const std::string &path, uint8_t mode) {
   assert(path.size());
   assert(path.back() != '/');
-  assert(SD_CI.exists(path));
+  assert(SD.exists(path));
   _isOpen = true;
   _mode = mode;
   _path = path;
@@ -47,7 +47,7 @@ const char *File_CI::name() const {
 // get next char without advancing position
 int File_CI::peek() const {
   assert(!isDirectory());
-  std::string *pContents = SD_CI.contentsOf(_path);
+  std::string *pContents = SD.contentsOf(_path);
   assert(pContents);
   if (_pos < pContents->size()) {
     return pContents->at(_pos);
@@ -66,7 +66,7 @@ int File_CI::peek() const {
 int File_CI::read(char *buf, size_t size) {
   assert(!isDirectory());
   assert(_mode & O_READ);
-  std::string *pContents = SD_CI.contentsOf(_path);
+  std::string *pContents = SD.contentsOf(_path);
   size = size <= available() ? size : available();
   memcpy(buf, pContents->c_str() + _pos, size);
   _pos += size;
@@ -86,13 +86,13 @@ bool File_CI::seek(uint32_t pos) {
 
 uint32_t File_CI::size() const {
   assert(!isDirectory());
-  return SD_CI.contentsOf(_path)->size();
+  return SD.contentsOf(_path)->size();
 }
 
 size_t File_CI::write(const char *buf, size_t size) {
   assert(!isDirectory());
   assert(_mode & O_WRITE);
-  std::string *pContents = SD_CI.contentsOf(_path);
+  std::string *pContents = SD.contentsOf(_path);
   for (int i = 0; i < size; ++i) {
     *pContents += buf[i];
   }
@@ -102,7 +102,7 @@ size_t File_CI::write(const char *buf, size_t size) {
 
 File_CI File_CI::openNextFile(uint8_t mode) {
   assert(isDirectory());
-  const std::string &name = SD_CI.nameAfter(_current, _path);
+  const std::string &name = SD.nameAfter(_current, _path);
   if (name.empty()) {
     _current = _path;
     return File_CI();
