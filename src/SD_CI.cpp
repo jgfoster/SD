@@ -40,10 +40,15 @@ const std::string &SDClass_CI::nameAfter(const std::string fullPath,
     // advance to next entry after directory
     while ((++iter)->first.substr(0, fullPath.size()) == fullPath) {
     }
-  } else {
+  } else { // advance to next entry
     ++iter;
   }
+  // are we at the end of the file system?
   if (iter == fileSystem.end()) {
+    return emptyString;
+  }
+  // have we finished the current directory?
+  if (iter->first.substr(0, start.size()) != start) {
     return emptyString;
   }
   return iter->first;

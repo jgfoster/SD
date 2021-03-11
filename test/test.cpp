@@ -247,48 +247,62 @@ unittest(isDirectory) {
 }
 
 unittest(next) {
-  File file;
-
-  file = SD.open("x", FILE_WRITE);
-  file.close();
-  SD.open("x", O_WRITE).close();
-
+  /*
+   * /c
+   * /d/
+   * /d/x
+   * /d/y
+   * /e
+   */
+  // create things out-of-order to confirm that we find in order
+  SD.open("e", O_WRITE).close();
   SD.mkdir("d");
-
-  file = SD.open("a", FILE_WRITE);
-  file.close();
-  SD.open("a", O_WRITE).close();
+  SD.open("c", O_WRITE).close();
+  SD.open("d/x", O_WRITE).close();
+  SD.open("d/y", O_WRITE).close();
 
   File root = SD.open("/");
   assertTrue(root);
   assertTrue(root.isDirectory());
 
-  file = root.openNextFile();
-  assertTrue(file);
-  assertEqual(std::string("a"), file.name());
-  assertFalse(file.isDirectory());
-  file.close();
+  File c = root.openNextFile();
+  assertTrue(c);
+  assertEqual(std::string("c"), c.name());
+  assertFalse(c.isDirectory());
+  c.close();
 
-  file = root.openNextFile();
-  assertTrue(file);
-  assertEqual(std::string("d"), file.name());
-  assertTrue(file.isDirectory());
-  file.close();
+  File d = root.openNextFile();
+  assertTrue(d);
+  assertEqual(std::string("d"), d.name());
+  assertTrue(d.isDirectory());
+  File d1 = d.openNextFile();
+  assertTrue(d1);
+  assertEqual(std::string("x"), d1.name());
+  assertFalse(d1.isDirectory());
+  d1.close();
+  File d2 = d.openNextFile();
+  assertTrue(d2);
+  assertEqual(std::string("y"), d2.name());
+  assertFalse(d2.isDirectory());
+  d2.close();
+  File end = d.openNextFile();
+  assertFalse(end);
+  d.close();
 
-  file = root.openNextFile();
-  assertTrue(file);
-  assertEqual(std::string("x"), file.name());
-  assertFalse(file.isDirectory());
-  file.close();
+  File e = root.openNextFile();
+  assertTrue(e);
+  assertEqual(std::string("e"), e.name());
+  assertFalse(e.isDirectory());
+  e.close();
 
-  file = root.openNextFile();
-  assertFalse(file);
+  end = root.openNextFile();
+  assertFalse(end);
 
   root.rewindDirectory();
-  file = root.openNextFile();
-  assertTrue(file);
-  assertEqual(std::string("a"), file.name());
-  file.close();
+  c = root.openNextFile();
+  assertTrue(c);
+  assertEqual(std::string("c"), c.name());
+  c.close();
 }
 
 unittest_main()
