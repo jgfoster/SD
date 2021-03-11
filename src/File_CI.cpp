@@ -6,12 +6,11 @@
 #include <inttypes.h>
 #include <iostream>
 #include <stdio.h>
-#include <string.h>
 
 namespace SDLib {
 
 // create a directory reference
-File_CI::File_CI(const std::string &path) {
+File_CI::File_CI(const String &path) {
   assert(path.size());
   assert(path.back() == '/');
   assert(SD.exists(path));
@@ -21,7 +20,7 @@ File_CI::File_CI(const std::string &path) {
 }
 
 // create a file reference
-File_CI::File_CI(const std::string &path, uint8_t mode) {
+File_CI::File_CI(const String &path, uint8_t mode) {
   assert(path.size());
   assert(path.back() != '/');
   assert(SD.exists(path));
@@ -44,7 +43,7 @@ const char *File_CI::name() const {
 // get next char without advancing position
 int File_CI::peek() const {
   assert(!isDirectory());
-  std::string *pContents = SD.contentsOf(_path);
+  String *pContents = SD.contentsOf(_path);
   assert(pContents);
   if (_pos < pContents->size()) {
     return pContents->at(_pos);
@@ -63,7 +62,7 @@ int File_CI::peek() const {
 int File_CI::read(char *buf, size_t size) {
   assert(!isDirectory());
   assert(_mode & O_READ);
-  std::string *pContents = SD.contentsOf(_path);
+  String *pContents = SD.contentsOf(_path);
   size = size <= available() ? size : available();
   memcpy(buf, pContents->c_str() + _pos, size);
   _pos += size;
@@ -89,7 +88,7 @@ uint32_t File_CI::size() const {
 size_t File_CI::write(const char *buf, size_t size) {
   assert(!isDirectory());
   assert(_mode & O_WRITE);
-  std::string *pContents = SD.contentsOf(_path);
+  String *pContents = SD.contentsOf(_path);
   for (int i = 0; i < size; ++i) {
     *pContents += buf[i];
   }
@@ -99,7 +98,7 @@ size_t File_CI::write(const char *buf, size_t size) {
 
 File_CI File_CI::openNextFile(uint8_t mode) {
   assert(isDirectory());
-  const std::string &name = SD.nameAfter(_current, _path);
+  const String &name = SD.nameAfter(_current, _path);
   if (name.empty()) {
     _current = _path;
     return File_CI();

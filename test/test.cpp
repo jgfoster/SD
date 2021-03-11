@@ -267,22 +267,22 @@ unittest(next) {
 
   File c = root.openNextFile();
   assertTrue(c);
-  assertEqual(std::string("c"), c.name());
+  assertEqual(String("c"), c.name());
   assertFalse(c.isDirectory());
   c.close();
 
   File d = root.openNextFile();
   assertTrue(d);
-  assertEqual(std::string("d"), d.name());
+  assertEqual(String("d"), d.name());
   assertTrue(d.isDirectory());
   File d1 = d.openNextFile();
   assertTrue(d1);
-  assertEqual(std::string("x"), d1.name());
+  assertEqual(String("x"), d1.name());
   assertFalse(d1.isDirectory());
   d1.close();
   File d2 = d.openNextFile();
   assertTrue(d2);
-  assertEqual(std::string("y"), d2.name());
+  assertEqual(String("y"), d2.name());
   assertFalse(d2.isDirectory());
   d2.close();
   File end = d.openNextFile();
@@ -291,7 +291,7 @@ unittest(next) {
 
   File e = root.openNextFile();
   assertTrue(e);
-  assertEqual(std::string("e"), e.name());
+  assertEqual(String("e"), e.name());
   assertFalse(e.isDirectory());
   e.close();
 
@@ -301,7 +301,7 @@ unittest(next) {
   root.rewindDirectory();
   c = root.openNextFile();
   assertTrue(c);
-  assertEqual(std::string("c"), c.name());
+  assertEqual(String("c"), c.name());
   c.close();
 }
 

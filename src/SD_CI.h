@@ -4,7 +4,6 @@
 #include "SD.h"
 #include <cassert>
 #include <map>
-#include <string>
 
 namespace SDLib {
 
@@ -13,9 +12,9 @@ uint8_t const O_REMOVE = 0X80;
 
 class File_CI : public File_Base {
 public:
-  File_CI() {}                                    // not a file (for iteration)
-  File_CI(const std::string &path);               // create a directory
-  File_CI(const std::string &path, uint8_t mode); // create a file
+  File_CI() {}                               // not a file (for iteration)
+  File_CI(const String &path);               // create a directory
+  File_CI(const String &path, uint8_t mode); // create a file
 
   // file operations
   int available() const { return size() - _pos; }
@@ -46,12 +45,12 @@ public:
   void clearWriteError() { _writeError = 0; }
 
 private:
-  std::string _path; // full path
-  int _pos = 0;      // index of _next_ char to read or write
+  String _path; // full path
+  int _pos = 0; // index of _next_ char to read or write
   uint8_t _mode = 0;
   bool _isOpen = false;
   int _writeError = 0;
-  std::string _current; // used by directory iterator
+  String _current; // used by directory iterator
 };
 
 class SDClass_CI : public SDClass_Base {
@@ -62,44 +61,35 @@ public:
   void end() {}
 
   // return a pointer rather than a reference so we can use nullptr for missing
-  std::string *contentsOf(const std::string &path);
+  String *contentsOf(const String &path);
 
-  bool exists(const std::string &path);
-  bool exists(const char *path) { return exists(std::string(path)); }
-  bool exists(const String &path) { return exists(std::string(path.c_str())); }
+  bool exists(const String &path);
+  bool exists(const char *path) { return exists(String(path)); }
 
-  bool mkdir(const std::string &path);
-  bool mkdir(const char *path) { return mkdir(std::string(path)); }
-  bool mkdir(const String &path) { return mkdir(path.c_str()); }
+  bool mkdir(const String &path);
+  bool mkdir(const char *path) { return mkdir(String(path)); }
 
-  const std::string &nameAfter(const std::string current,
-                               const std::string start);
+  const String &nameAfter(const String current, const String start);
 
-  File_CI open(const std::string &path, uint8_t mode = FILE_READ);
+  File_CI open(const String &path, uint8_t mode = FILE_READ);
   File_CI open(const char *path, uint8_t mode) {
-    return open(std::string(path), mode);
-  }
-  File_CI open(const String &path, uint8_t mode) {
-    return open(std::string(path.c_str()), mode);
+    return open(String(path), mode);
   }
 
-  bool remove(const std::string &path);
-  bool remove(const char *path) { return remove(std::string(path)); }
-  bool remove(const String &path) { return remove(std::string(path.c_str())); }
+  bool remove(const String &path);
+  bool remove(const char *path) { return remove(String(path)); }
 
   void removeAll() { fileSystem.clear(); }
 
-  bool rmdir(const std::string &path);
-  bool rmdir(const char *path) { return rmdir(std::string(path)); }
-  bool rmdir(const String &path) { return rmdir(path.c_str()); }
+  bool rmdir(const String &path);
+  bool rmdir(const char *path) { return rmdir(String(path)); }
 
   String className() const { return "SDClass_Base"; }
 
 private:
-  static std::map<std::string, std::string> fileSystem;
-  std::string emptyString;
-  std::string normalizePath(const std::string &inPath,
-                            bool isDirectory = false);
+  static std::map<String, String> fileSystem;
+  String emptyString;
+  String normalizePath(const String &inPath, bool isDirectory = false);
 };
 
 extern SDClass_CI SD_CI;

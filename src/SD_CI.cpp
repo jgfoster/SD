@@ -4,35 +4,34 @@
 
 namespace SDLib {
 
-std::string *SDClass_CI::contentsOf(const std::string &path) {
-  std::string fullPath = normalizePath(path);
+String *SDClass_CI::contentsOf(const String &path) {
+  String fullPath = normalizePath(path);
   if (fileSystem.count(fullPath)) {
     return &fileSystem[fullPath];
   }
   return nullptr;
 }
 
-bool SDClass_CI::exists(const std::string &path) {
-  std::string fullPath = normalizePath(path);
+bool SDClass_CI::exists(const String &path) {
+  String fullPath = normalizePath(path);
   return contentsOf(fullPath) != nullptr;
 }
 
-bool SDClass_CI::mkdir(const std::string &path) {
-  std::string fullPath = normalizePath(path, true);
+bool SDClass_CI::mkdir(const String &path) {
+  String fullPath = normalizePath(path, true);
   if (exists(fullPath)) {
     return false;
   }
   size_t index = fullPath.find_last_of('/', fullPath.size() - 2);
   assert(index == 0 || exists(fullPath.substr(0, index + 1)));
   // save directory base name as "file contents" to simplify name() lookup
-  std::string dirName = fullPath.substr(index + 1, fullPath.size() - index - 2);
+  String dirName = fullPath.substr(index + 1, fullPath.size() - index - 2);
   fileSystem.emplace(fullPath, dirName);
   return true;
 }
 
-const std::string &SDClass_CI::nameAfter(const std::string fullPath,
-                                         const std::string start) {
-  std::map<std::string, std::string>::iterator iter;
+const String &SDClass_CI::nameAfter(const String fullPath, const String start) {
+  std::map<String, String>::iterator iter;
   iter = fileSystem.find(fullPath);
   assert(iter != fileSystem.end());
   if (iter->first != start &&
@@ -54,10 +53,10 @@ const std::string &SDClass_CI::nameAfter(const std::string fullPath,
   return iter->first;
 }
 
-File_CI SDClass_CI::open(const std::string &path, uint8_t mode) {
+File_CI SDClass_CI::open(const String &path, uint8_t mode) {
   // ensure we have a root directory
-  fileSystem.emplace(std::string("/"), std::string(""));
-  std::string fullPath = normalizePath(path);
+  fileSystem.emplace(String("/"), String(""));
+  String fullPath = normalizePath(path);
   if (exists(fullPath)) {
     if (fullPath.back() == '/') {
       return File_CI(fullPath);
@@ -71,8 +70,8 @@ File_CI SDClass_CI::open(const std::string &path, uint8_t mode) {
   return File_CI(fullPath, mode);
 }
 
-bool SDClass_CI::remove(const std::string &path) {
-  std::string fullPath = normalizePath(path);
+bool SDClass_CI::remove(const String &path) {
+  String fullPath = normalizePath(path);
   assert(fullPath.back() != '/');
   if (exists(fullPath)) {
     fileSystem.erase(fullPath);
@@ -81,11 +80,11 @@ bool SDClass_CI::remove(const std::string &path) {
   return false;
 }
 
-bool SDClass_CI::rmdir(const std::string &path) {
-  std::string fullPath = normalizePath(path, true);
+bool SDClass_CI::rmdir(const String &path) {
+  String fullPath = normalizePath(path, true);
   if (exists(fullPath)) {
     // check for children of this directory
-    std::string next = nameAfter(fullPath, fullPath);
+    String next = nameAfter(fullPath, fullPath);
     assert(next == "" || next.substr(0, fullPath.size()) != fullPath);
     fileSystem.erase(fullPath);
     return true;
@@ -94,9 +93,8 @@ bool SDClass_CI::rmdir(const std::string &path) {
 }
 
 // private
-std::string SDClass_CI::normalizePath(const std::string &inPath,
-                                      bool isDirectory) {
-  std::string fullPath = inPath;
+String SDClass_CI::normalizePath(const String &inPath, bool isDirectory) {
+  String fullPath = inPath;
   // add leading '/' for root
   if (fullPath.front() != '/') {
     fullPath.insert(0, 1, '/');
@@ -117,7 +115,7 @@ std::string SDClass_CI::normalizePath(const std::string &inPath,
 
 // static variables
 SDClass_CI SD_CI;
-std::map<std::string, std::string> SDClass::fileSystem;
+std::map<String, String> SDClass::fileSystem;
 
 } // namespace SDLib
 
