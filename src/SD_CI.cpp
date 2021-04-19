@@ -37,7 +37,8 @@ const String &SDClass_CI::nameAfter(const String fullPath, const String start) {
   if (iter->first != start &&
       fullPath.back() == '/') { // current entry is a directory
     // advance to next entry after directory
-    while ((++iter)->first.substr(0, fullPath.size()) == fullPath) {
+    while (++iter != fileSystem.end() &&
+           iter->first.substr(0, fullPath.size()) == fullPath) {
     }
   } else { // advance to next entry
     ++iter;

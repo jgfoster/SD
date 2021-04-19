@@ -3,3 +3,4 @@ Gemfile.lock
 vendor
 *.cpp.bin*
 .vscode
+libarduino.so*
