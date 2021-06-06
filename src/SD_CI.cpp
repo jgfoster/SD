@@ -12,16 +12,46 @@ String *SDClass_CI::contentsOf(const String &path) {
   return nullptr;
 }
 
+/**
+ * exists()
+ *
+ * Tests whether a file or directory exists on the SD card.
+ *
+ * path: the name of the file to test for existence, which
+ * can include directories (delimited by forward-slashes ('/').
+ */
 bool SDClass_CI::exists(const String &path) {
   String fullPath = normalizePath(path);
   return contentsOf(fullPath) != nullptr;
 }
 
+/**
+ * mkdir()
+ *
+ * Create a directory on the SD card. This will also create any
+ * intermediate directories that don't already exists; e.g.
+ * SD.mkdir("a/b/c") will create a, b, and c.
+ *
+ * path: the name of the directory to create, with sub-directories
+ * separated by forward-slashes ('/')
+ */
 bool SDClass_CI::mkdir(const String &path) {
   String fullPath = normalizePath(path, true);
   if (exists(fullPath)) {
     return false;
   }
+  // int i = 1;
+  // int j = fullPath.indexOf('/', i);
+  // while (j > 0) {
+  //   String intermediatePath = fullPath.substring(0, j);
+  //   String name = fullPath.substring(i, j - 1);
+  //   if (!exists(intermediatePath)) {
+  //     fileSystem.emplace(intermediatePath, fullPath.substring(i, j - 1));
+  //     i = j + 1;
+  //     j = fullPath.indexOf('/', i + 1);
+  //   }
+  // }
+
   size_t index = fullPath.find_last_of('/', fullPath.size() - 2);
   assert(index == 0 || exists(fullPath.substr(0, index + 1)));
   // save directory base name as "file contents" to simplify name() lookup
@@ -64,7 +94,8 @@ File_CI SDClass_CI::open(const String &path, uint8_t mode) {
     }
     return File_CI(fullPath, mode);
   }
-  assert(fullPath.back() != '/' && mode & O_WRITE);
+  assert(fullPath.back() != '/');
+  assert(mode & O_WRITE);
   size_t index = fullPath.find_last_of('/');
   assert(index == 0 || exists(fullPath.substr(0, index + 1)));
   fileSystem.emplace(fullPath, "");

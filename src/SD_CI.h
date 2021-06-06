@@ -5,6 +5,15 @@
 #include <cassert>
 #include <map>
 
+/**
+ * The mock SD has an internal map
+ *    key = normalized full path
+ *      * path always begins with a forward slash ('/')
+ *      * trailing forward slash ('/') indicates a directory
+ *    value = contents or name
+ *      * binary or text data for a file
+ *      * simple name for a directory (easier for name lookup)
+ */
 namespace SDLib {
 
 // we add a new "mode" so `find()` can remove files and directories
@@ -84,7 +93,7 @@ public:
   bool rmdir(const String &path);
   bool rmdir(const char *path) { return rmdir(String(path)); }
 
-  String className() const { return "SDClass_Base"; }
+  String className() const { return "SDClass_CI"; }
 
 private:
   static std::map<String, String> fileSystem;
